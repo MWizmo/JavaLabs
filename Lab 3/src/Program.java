@@ -14,7 +14,7 @@ public class Program {
             String line = reader.readLine();
             HashMap<String, Integer> dictionary = new HashMap<>();
             while (line != null) {
-                String[] splitted = line.split("\\s*([\\s,!.\\-?:;—\n…\t])\\s*");
+                String[] splitted = line.split("\\s*([\\s,!.\\-?:;—\n…\t«»()\"'])\\s*");
                 for(String word:splitted)
                     if (!word.equals(""))
                         if(dictionary.containsKey(word))
@@ -23,14 +23,12 @@ public class Program {
                             dictionary.put(word,1);
                 line = reader.readLine();
             }
-            LinkedHashMap<String, Integer> top_words = new LinkedHashMap<>();
-            List<Map.Entry<String, Integer>> list = new LinkedList<>(dictionary.entrySet());
+            List<Map.Entry<String, Integer>> list = new ArrayList<>(dictionary.entrySet());
             list.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
-            for (Map.Entry<String, Integer> entry : list)
-                top_words.put(entry.getKey(), entry.getValue());
-            for(int i=0;i<20;i++)
-                System.out.println(top_words.keySet().toArray()[i] + " : " + top_words.get(top_words.keySet().toArray()[i]));
-        } catch (Exception e) {
+            for(int i=0; i<20; i++)
+                System.out.println(list.get(i));
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
