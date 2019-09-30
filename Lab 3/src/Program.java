@@ -17,10 +17,10 @@ public class Program {
                 String[] splitted = line.split("\\s*([\\s,!.\\-?:;—\n…\t«»()\"'])\\s*");
                 for(String word:splitted)
                     if (!word.equals(""))
-                        if(dictionary.containsKey(word))
-                            dictionary.put(word,dictionary.get(word) + 1);
+                        if(dictionary.containsKey(word.toLowerCase()))
+                            dictionary.put(word.toLowerCase(),dictionary.get(word.toLowerCase()) + 1);
                         else
-                            dictionary.put(word,1);
+                            dictionary.put(word.toLowerCase(),1);
                 line = reader.readLine();
             }
             List<Map.Entry<String, Integer>> list = new ArrayList<>(dictionary.entrySet());
