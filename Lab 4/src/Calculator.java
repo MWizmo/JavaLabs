@@ -1,12 +1,14 @@
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Stack;
 
 class DigitButtonListener implements ActionListener {
     private JButton btn;
     private JLabel label;
 
-    public DigitButtonListener(JButton btn, JLabel label){
+    DigitButtonListener(JButton btn, JLabel label){
         this.btn = btn;
         this.label = label;
     }
@@ -39,11 +41,13 @@ public class Calculator extends JFrame{
     private JButton button5;
     private JButton button6;
     private JLabel screen;
+    private String error;
 
     public Calculator(){
         setContentPane(panel1);
+        error = "No";
         setTitle("Калькулятор");
-        setSize(400,450);
+        setSize(500,450);
         setLocation(500,150);
         setVisible(true);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -75,6 +79,143 @@ public class Calculator extends JFrame{
                 screen.setText(" ");
             }
         });
+        button14.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                double res = countResult(screen.getText());
+                if(error.equals("No"))
+                    screen.setText(" " + String.valueOf(res));
+                else{
+                    showError();
+                    screen.setText(" ");
+                    error = "No";
+                }
+            }
+        });
+    }
+
+    private void showError(){
+        JOptionPane.showMessageDialog(this, error,"Ошибка при вычислении", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private double countResult(String expression){
+        expression = expression.trim();
+        ArrayList<String> polish = reversePolishNotation(expression);
+        if(!error.equals("No")){
+            return 0.0;
+        }
+        Stack<Double> stack = new Stack<>();
+        for(String elem:polish){
+            if(isDouble(elem))
+                stack.push(Double.parseDouble(elem));
+            else{
+                double second = stack.pop();
+                double first = stack.pop();
+                if(second==0 && elem.equals("/")){
+                    error = "Деление на ноль";
+                    return 0.0;
+                }
+                stack.push(calculate(first,second,elem));
+            }
+        }
+        return stack.pop();
+    }
+
+    private double calculate(double first, double second, String sign){
+        switch (sign){
+            case "+":
+                return first + second;
+            case "-":
+                return first - second;
+            case "*":
+                return first * second;
+            case "/":
+                return first / second;
+            case "^":
+                return Math.pow(first,second);
+        }
+        return 0;
+    }
+
+    private boolean isDouble(String s){
+        try {
+            Double.parseDouble(s);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private ArrayList<String> reversePolishNotation(String expression){
+        ArrayList<String> output = new ArrayList<>();
+        StringBuilder str = new StringBuilder();
+        Stack<Character> stack = new Stack<>();
+        char[] chars = expression.toCharArray();
+        int start = 0;
+        if(chars[0]=='-') {
+            str.append('-');
+            start = 1;
+        }
+        else if(!Character.isDigit(chars[0])) {
+            error = "Недопустимое начало выражения";
+            return output;
+        }
+        for(int i=start; i<chars.length; i++){
+            if(Character.isDigit(chars[i]))
+                str.append(chars[i]);
+            else if(chars[i]=='.')
+                if(!Character.isDigit(chars[i-1])){
+                    error = "Недопустимое использование \".\"";
+                    return new ArrayList<>();
+                }
+                else
+                    str.append(chars[i]);
+            else {
+                if (!Character.isDigit(chars[i-1])) {
+                    error = "Неправильная расстановка арифметических знаков";
+                    return new ArrayList<>();
+                }
+                if(str.length()>0){
+                    output.add(str.toString());
+                    str = new StringBuilder();
+                }
+                if(stack.empty() || getPriority(stack.peek())<getPriority(chars[i]))
+                    stack.push(chars[i]);
+                else{
+                    while(!stack.empty() && getPriority(stack.peek())>=getPriority(chars[i])){
+                        output.add(stack.pop().toString());
+                    }
+                    stack.push(chars[i]);
+                }
+            }
+        }
+        if(str.length()==0) {
+            error = "Недопустимое окончание выражения";
+            return new ArrayList<>();
+        }
+        output.add(str.toString());
+        while(!stack.empty())
+            output.add(stack.pop().toString());
+        return output;
+    }
+
+    private int getPriority(char sign){
+        int res = 1;
+        switch (sign){
+            case '+':
+            case '-':
+                res = 1;
+                break;
+            case '*':
+            case '/':
+                res = 2;
+                break;
+            case '^':
+                res = 3;
+                break;
+            default:
+                break;
+        }
+        return res;
     }
 
     public static void main(String[] args){
