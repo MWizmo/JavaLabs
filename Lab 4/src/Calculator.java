@@ -15,7 +15,10 @@ class DigitButtonListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        label.setText(label.getText() + btn.getText());
+        if(btn.getText().equals(".") && label.getText().equals(" "))
+            label.setText("0.");
+        else
+            label.setText(label.getText() + btn.getText());
     }
 }
 
@@ -105,8 +108,12 @@ public class Calculator extends JFrame{
         }
         Stack<Double> stack = new Stack<>();
         for(String elem:polish){
-            if(isDouble(elem))
-                stack.push(Double.parseDouble(elem));
+            if(isDouble(elem)) {
+                double d = Double.parseDouble(elem);
+                if(d == -0.0)
+                    d = 0.0;
+                stack.push(d);
+            }
             else{
                 double second = stack.pop();
                 double first = stack.pop();
