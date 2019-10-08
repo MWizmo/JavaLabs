@@ -84,7 +84,7 @@ public class Calculator extends JFrame{
         });
         button14.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-                double res = countResult(screen.getText());
+                float res = countResult(screen.getText());
                 if(error.equals("No"))
                     screen.setText(" " + String.valueOf(res));
                 else{
@@ -100,26 +100,23 @@ public class Calculator extends JFrame{
         JOptionPane.showMessageDialog(this, error,"Ошибка при вычислении", JOptionPane.ERROR_MESSAGE);
     }
 
-    private double countResult(String expression){
+    private float countResult(String expression){
         expression = expression.trim();
         ArrayList<String> polish = reversePolishNotation(expression);
         if(!error.equals("No")){
-            return 0.0;
+            return 0.0f;
         }
-        Stack<Double> stack = new Stack<>();
+        Stack<Float> stack = new Stack<>();
         for(String elem:polish){
-            if(isDouble(elem)) {
-                double d = Double.parseDouble(elem);
-                if(d == -0.0)
-                    d = 0.0;
-                stack.push(d);
+            if(isFloat(elem)) {
+                stack.push(Float.parseFloat(elem));
             }
             else{
-                double second = stack.pop();
-                double first = stack.pop();
+                float second = stack.pop();
+                float first = stack.pop();
                 if(second==0 && elem.equals("/")){
                     error = "Деление на ноль";
-                    return 0.0;
+                    return 0.0f;
                 }
                 stack.push(calculate(first,second,elem));
             }
@@ -127,25 +124,33 @@ public class Calculator extends JFrame{
         return stack.pop();
     }
 
-    private double calculate(double first, double second, String sign){
+    private float calculate(float first, float second, String sign){
+        float res = 0;
         switch (sign){
             case "+":
-                return first + second;
+                res = first + second;
+                break;
             case "-":
-                return first - second;
+                res = first - second;
+                break;
             case "*":
-                return first * second;
+                res = first * second;
+                break;
             case "/":
-                return first / second;
+                res = first / second;
+                break;
             case "^":
-                return Math.pow(first,second);
+                res = (float) Math.pow(first,second);
+                break;
         }
-        return 0;
+        if (res==-0.0)
+            res = 0.0f;
+        return res;
     }
 
-    private boolean isDouble(String s){
+    private boolean isFloat(String s){
         try {
-            Double.parseDouble(s);
+            Float.parseFloat(s);
             return true;
         } catch (NumberFormatException e) {
             return false;
