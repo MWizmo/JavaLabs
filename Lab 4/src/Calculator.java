@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -8,21 +9,23 @@ class DigitButtonListener implements ActionListener {
     private JButton btn;
     private JLabel label;
 
-    DigitButtonListener(JButton btn, JLabel label){
+    DigitButtonListener(JButton btn, JLabel label) {
         this.btn = btn;
         this.label = label;
     }
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        if(btn.getText().equals(".") && label.getText().equals(" "))
+        if (btn.getText().equals(".") && label.getText().equals(" "))
             label.setText("0.");
+        else if(btn.getText().equals(".") && label.getText().substring(label.getText().length()-1).equals("."))
+            System.out.println();
         else
             label.setText(label.getText() + btn.getText());
     }
 }
 
-public class Calculator extends JFrame{
+public class Calculator extends JFrame {
     private JButton a1Button;
     private JPanel panel1;
     private JButton a2Button;
@@ -46,12 +49,12 @@ public class Calculator extends JFrame{
     private JLabel screen;
     private String error;
 
-    public Calculator(){
+    public Calculator() {
         setContentPane(panel1);
         error = "No";
         setTitle("Калькулятор");
-        setSize(500,450);
-        setLocation(500,150);
+        setSize(600, 450);
+        setLocation(400, 150);
         setVisible(true);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         screen.setText(" ");
@@ -71,23 +74,23 @@ public class Calculator extends JFrame{
         button5.addActionListener(new DigitButtonListener(button5, screen));
         button6.addActionListener(new DigitButtonListener(button6, screen));
         button9.addActionListener(new DigitButtonListener(button9, screen));
-        button4.addActionListener(new ActionListener(){
+        button4.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(!screen.getText().equals(" "))
-                    screen.setText(screen.getText().substring(0,screen.getText().length()-1));
+                if (!screen.getText().equals(" "))
+                    screen.setText(screen.getText().substring(0, screen.getText().length() - 1));
             }
         });
-        button10.addActionListener(new ActionListener(){
+        button10.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 screen.setText(" ");
             }
         });
-        button14.addActionListener(new ActionListener(){
+        button14.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 float res = countResult(screen.getText());
-                if(error.equals("No"))
+                if (error.equals("No"))
                     screen.setText(" " + String.valueOf(res));
-                else{
+                else {
                     showError();
                     screen.setText(" ");
                     error = "No";
@@ -96,37 +99,36 @@ public class Calculator extends JFrame{
         });
     }
 
-    private void showError(){
-        JOptionPane.showMessageDialog(this, error,"Ошибка при вычислении", JOptionPane.ERROR_MESSAGE);
+    private void showError() {
+        JOptionPane.showMessageDialog(this, error, "Ошибка при вычислении", JOptionPane.ERROR_MESSAGE);
     }
 
-    private float countResult(String expression){
+    private float countResult(String expression) {
         expression = expression.trim();
         ArrayList<String> polish = reversePolishNotation(expression);
-        if(!error.equals("No")){
+        if (!error.equals("No")) {
             return 0.0f;
         }
         Stack<Float> stack = new Stack<>();
-        for(String elem:polish){
-            if(isFloat(elem)) {
+        for (String elem : polish) {
+            if (isFloat(elem)) {
                 stack.push(Float.parseFloat(elem));
-            }
-            else{
+            } else {
                 float second = stack.pop();
                 float first = stack.pop();
-                if(second==0 && elem.equals("/")){
+                if (second == 0 && elem.equals("/")) {
                     error = "Деление на ноль";
                     return 0.0f;
                 }
-                stack.push(calculate(first,second,elem));
+                stack.push(calculate(first, second, elem));
             }
         }
         return stack.pop();
     }
 
-    private float calculate(float first, float second, String sign){
+    private float calculate(float first, float second, String sign) {
         float res = 0;
-        switch (sign){
+        switch (sign) {
             case "+":
                 res = first + second;
                 break;
@@ -140,15 +142,15 @@ public class Calculator extends JFrame{
                 res = first / second;
                 break;
             case "^":
-                res = (float) Math.pow(first,second);
+                res = (float) Math.pow(first, second);
                 break;
         }
-        if (res==-0.0)
+        if (res == -0.0)
             res = 0.0f;
         return res;
     }
 
-    private boolean isFloat(String s){
+    private boolean isFloat(String s) {
         try {
             Float.parseFloat(s);
             return true;
@@ -157,62 +159,60 @@ public class Calculator extends JFrame{
         }
     }
 
-    private ArrayList<String> reversePolishNotation(String expression){
+    private ArrayList<String> reversePolishNotation(String expression) {
         ArrayList<String> output = new ArrayList<>();
         StringBuilder str = new StringBuilder();
         Stack<Character> stack = new Stack<>();
         char[] chars = expression.toCharArray();
         int start = 0;
-        if(chars[0]=='-') {
+        if (chars[0] == '-') {
             str.append('-');
             start = 1;
-        }
-        else if(!Character.isDigit(chars[0])) {
+        } else if (!Character.isDigit(chars[0])) {
             error = "Недопустимое начало выражения";
             return output;
         }
-        for(int i=start; i<chars.length; i++){
-            if(Character.isDigit(chars[i]))
+        for (int i = start; i < chars.length; i++) {
+            if (Character.isDigit(chars[i]))
                 str.append(chars[i]);
-            else if(chars[i]=='.')
-                if(!Character.isDigit(chars[i-1])){
+            else if (chars[i] == '.')
+                if (!Character.isDigit(chars[i - 1])) {
                     error = "Недопустимое использование \".\"";
                     return new ArrayList<>();
-                }
-                else
+                } else
                     str.append(chars[i]);
             else {
-                if (!Character.isDigit(chars[i-1])) {
+                if (!Character.isDigit(chars[i - 1])) {
                     error = "Неправильная расстановка арифметических знаков";
                     return new ArrayList<>();
                 }
-                if(str.length()>0){
+                if (str.length() > 0) {
                     output.add(str.toString());
                     str = new StringBuilder();
                 }
-                if(stack.empty() || getPriority(stack.peek())<getPriority(chars[i]))
+                if (stack.empty() || getPriority(stack.peek()) < getPriority(chars[i]))
                     stack.push(chars[i]);
-                else{
-                    while(!stack.empty() && getPriority(stack.peek())>=getPriority(chars[i])){
+                else {
+                    while (!stack.empty() && getPriority(stack.peek()) >= getPriority(chars[i])) {
                         output.add(stack.pop().toString());
                     }
                     stack.push(chars[i]);
                 }
             }
         }
-        if(str.length()==0) {
+        if (str.length() == 0) {
             error = "Недопустимое окончание выражения";
             return new ArrayList<>();
         }
         output.add(str.toString());
-        while(!stack.empty())
+        while (!stack.empty())
             output.add(stack.pop().toString());
         return output;
     }
 
-    private int getPriority(char sign){
+    private int getPriority(char sign) {
         int res = 1;
-        switch (sign){
+        switch (sign) {
             case '+':
             case '-':
                 res = 1;
@@ -230,7 +230,7 @@ public class Calculator extends JFrame{
         return res;
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         new Calculator();
     }
 }
