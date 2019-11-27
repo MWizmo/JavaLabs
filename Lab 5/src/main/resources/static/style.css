@@ -1,0 +1,21 @@
+table{
+    border: 1px solid black;
+}
+
+thead{
+    background:#d6d6d6;
+}
+
+td{
+    padding:10px;
+
+}
+
+a{
+    text-decoration: none;
+    color:blue;
+}
+
+button{
+    height:30px;
+}

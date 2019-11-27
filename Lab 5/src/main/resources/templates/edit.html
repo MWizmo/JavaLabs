@@ -1,0 +1,38 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактировать</title>
+</head>
+<body>
+    <h1>Редактировать</h1>
+    <br/>
+
+    <form action="#" th:action="@{/edit}" th:object="${Good}" method="post">
+        <input type="hidden" th:field="*{id}">
+        <table border="0" cellpadding="10">
+            <tr>
+                <td>Название:</td>
+                <td><input type="text" th:field="*{title}"></td>
+            </tr>
+            <tr>
+                <td>Вес, кг:</td>
+                <td><input type="text" th:field="*{weight}"></td>
+            </tr>
+            <tr>
+                <td>Тип:</td>
+                <td>
+                    <select th:field="*{type}" >
+                        <option value="0" label="Категория"></option>
+                        <option th:each="type:${types}" th:value="${type.id}" th:text="${type.title}"></option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><button type="submit">Сохранить</button></td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>

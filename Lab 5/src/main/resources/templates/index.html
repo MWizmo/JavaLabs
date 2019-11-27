@@ -1,0 +1,44 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title>Складской учет</title>
+    <link href="../static/style.css" th:href="@{/style.css}" rel="stylesheet" />
+</head>
+<body>
+    <h1>Товары на складе</h1>
+    <table>
+        <thead>
+            <tr><th>Название</th><th>Вес, кг</th><th>Категория</th><th>Действия</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="good: ${goods}">
+            <td th:text="${good.title}"></td>
+            <td th:text="${good.weight}"></td>
+            <td th:text="${good.type}"></td>
+            <td>
+                <a th:href="@{'/edit/' + ${good.id}}">Изменить</a>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <a th:href="@{'/delete/' + ${good.id}}">Удалить</a>
+            </td>
+        </tr>
+        <tr>
+            <form action="#" th:action="@{/save}" th:object="${new_good}" method="post">
+                <td><input type="text" th:field="*{title}"></td>
+                <td><input type="text" th:field="*{weight}"></td>
+                <td>
+                    <select th:field="*{type}" >
+                        <option value="0" label="Категория"></option>
+                        <option th:each="type:${types}" th:value="${type.id}" th:text="${type.title}"></option>
+                    </select>
+                </td>
+                <td><button type="submit">Добавить продукт</button></td>
+            </form>
+        </tr>
+        </tbody>
+    </table>
+    <br><br>
+    <button onclick="window.location='new_type'">Категории</button>
+    <br><br>
+</body>
+</html>

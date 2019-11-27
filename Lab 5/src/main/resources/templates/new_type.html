@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8">
+    <title>Категории</title>
+    <link href="../static/style.css" th:href="@{/style.css}" rel="stylesheet" />
+</head>
+<body>
+<h1>Категории товаров</h1>
+<table>
+    <thead>
+    <tr><th>ID</th><th>Название</th><th>Действия</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="type: ${types}">
+        <td th:text="${type.id}"></td>
+        <td th:text="${type.title}"></td>
+        <td>
+            <a th:href="@{'/edit_type/' + ${type.id}}">Изменить</a>
+        </td>
+    </tr>
+    <tr>
+        <form action="" th:action="@{/add_type}" th:object="${new_type}" method="post">
+            <td></td>
+            <td><input type="text" th:field="*{title}"></td>
+            <td><button type="submit">Добавить</button></td>
+        </form>
+    </tr>
+    </tbody>
+</table>
+<br><br>
+<button onclick="window.location='/'">Назад</button>
+<br><br>
+</body>
+</html>
